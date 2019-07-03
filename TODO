@@ -1,8 +1,5 @@
 TODO
 ====
-- GIT submit and test from scratch
-
-Next:
 - remove edgHeaderGraph.dot and include_file_graph_from_edg_rose_translation.dot
 - add more comprehensive documentation entity and attribute. Possibly extract from an external file? 
 - documentation: notebook (guide) and reference html (check existing python references)
