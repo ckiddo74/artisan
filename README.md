@@ -1,4 +1,6 @@
-# Artisan meta-programming framework
+# Artisan 
+
+Artisan is a meta-programming framework which allows compilation optimisation strategies to be codified using Python, and then automatically appplied. Artisan supports C/C++ source-code analysis, instrumentation, and supports mechanisms for performing design-space exploration (DSE) and integrating third-party tools.
 
 ## Requirements
 
