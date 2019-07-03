@@ -1,0 +1,72 @@
+diff -Naur src.0.9.11.30/src/3rdPartyLibraries/libharu-2.1.0/src/Makefile.in rose-patch/src/3rdPartyLibraries/libharu-2.1.0/src/Makefile.in
+--- src.0.9.11.30/src/3rdPartyLibraries/libharu-2.1.0/src/Makefile.in	2019-06-27 11:34:00.767463161 +0100
++++ rose-patch/src/3rdPartyLibraries/libharu-2.1.0/src/Makefile.in	2019-06-29 00:01:08.258058536 +0100
+@@ -99,7 +99,10 @@
+ AWK = @AWK@
+ CC = @CC@
+ CCDEPMODE = @CCDEPMODE@
+-CFLAGS = @CFLAGS@
++# GABE patch (15th/June/2019): configures the hpdf library to be linked with -fPIC 
++#                              so that it can be statically linked into the artrose 
++#                              shared library (python module)
++CFLAGS = @CFLAGS@ -fPIC
+ CPP = @CPP@
+ CPPFLAGS = @CPPFLAGS@
+ CXX = @CXX@
+diff -Naur src.0.9.11.30/src/frontend/SageIII/sage_support/cmdline.cpp rose-patch/src/frontend/SageIII/sage_support/cmdline.cpp
+--- src.0.9.11.30/src/frontend/SageIII/sage_support/cmdline.cpp	2019-06-27 11:34:00.875464229 +0100
++++ rose-patch/src/frontend/SageIII/sage_support/cmdline.cpp	2019-06-29 19:46:25.246767749 +0100
+@@ -47,7 +47,9 @@
+      for (Rose_STL_Container<string>::const_iterator i = dirs.begin(); i != dirs.end(); ++i)
+         {
+           ROSE_ASSERT (!i->empty());
+-          string fullPath = (*i)[0] == '/' ? *i : (includeBase + "/" + *i);
++
++          // GABE (15th/June/2019): sets fullPath so that directories defined with absolute paths are loaded from the build       
++          string fullPath = (*i)[0] == '/' ? (includeBase + "/" + i->substr(1)) : (includeBase + "/" + *i);
+ #if 1
+        // DQ (11/8/2011): We want to exclude the /usr/include directory since it will be search automatically by EDG.
+        // If we include it here it will become part of the -sys_include directories and that will cause it to 
+@@ -7269,8 +7271,9 @@
+        }
+ 
+   // Debugging (verbose) output
+-  // if ( (get_verbose() >= 0) )
+-     if ( (get_verbose() > 1) )
++     // GABE (15th/June/2019): allows the verbose level to be configured through SgProject (and thus exposed to python)
++     //                        so that we can see what is being passed to the EDG frontend
++     if ( (SgProject::get_verbose() > 1) )
+         {
+           std::string argString = CommandlineProcessing::generateStringFromArgList(inputCommandLine,false,false);
+           printf ("In build_EDG_CommandLine(): Input Command Line Arguments: \n%s \n",argString.c_str());
+diff -Naur src.0.9.11.30/src/frontend/SageIII/sage_support/sage_support.cpp rose-patch/src/frontend/SageIII/sage_support/sage_support.cpp
+--- src.0.9.11.30/src/frontend/SageIII/sage_support/sage_support.cpp	2019-06-27 11:34:00.875464229 +0100
++++ rose-patch/src/frontend/SageIII/sage_support/sage_support.cpp	2019-06-29 19:47:11.187291996 +0100
+@@ -551,6 +551,14 @@
+     _Insure_checking_enable(1); // re-enable Insure++ checking
+ #endif
+ 
++    // GABE patch (15th/June/2019): Allows to configure the ROSE system header directory (where the rose_edg_required_macros_and-functions lives)
++    // via an environment variable
++    const char *p_env = std::getenv("ROSE_SYS_HEADERS");
++    if (p_env) {
++       result = p_env;
++       return true;
++    }
++
+     if (libroseName == NULL) goto default_check;
+     char* libdir = dirname(libroseName);
+     if (libdir == NULL) {free(libroseName); goto default_check;}
+diff -Naur src.0.9.11.30/src/ROSETTA/Grammar/Support.code rose-patch/src/ROSETTA/Grammar/Support.code
+--- src.0.9.11.30/src/ROSETTA/Grammar/Support.code	2019-06-27 11:34:00.795463438 +0100
++++ rose-patch/src/ROSETTA/Grammar/Support.code	2019-06-29 00:01:08.266058621 +0100
+@@ -17982,7 +17982,8 @@
+   // DQ (3/9/2009): Allow the verbose level to be set before we even call the SgProject constructor (helps debug Intel Pin usage).
+      if (p_verbose > 0)
+         {
+-          printf ("Note: Verbose was already set to non-zero value = %d (valid range is 0...10) \n",p_verbose);
++          // GABE patch (15th/June/2019): Remove warning about verbose level being already set before constructor.
++          // printf ("Note: Verbose was already set to non-zero value = %d (valid range is 0...10) \n",p_verbose);
+           assert(p_verbose <= 10);
+         }
+        else

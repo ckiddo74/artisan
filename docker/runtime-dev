@@ -1,0 +1,20 @@
+#!/bin/bash
+
+USER=$1
+USER_ID=$2
+
+#echo "Adding user: $USER"
+#echo "... with UID: $USER_ID"
+useradd --shell /bin/bash -u $USER_ID -G sudo -c "" -d /home/$USER -M $USER 1> /dev/null
+echo 'export PATH=/artisan/bin:$PATH' >> /home/$USER/.bashrc
+echo 'export LD_LIBRARY_PATH=/artisan/artisan/packages/lib:$LD_LIBRARY_PATH' >> /home/$USER/.bashrc
+echo 'export PYTHONPATH=/artisan:$PYTHONPATH'  >> /home/$USER/.bashrc
+echo "export PS1='\e[0;35martisan-dev\e[0;0m:\e[0;32m$\w$ \e[m'" >> /home/$USER/.bashrc
+echo "alias ls='ls --color=auto'" >> /home/$USER/.bashrc
+chown $USER:$USER /home/$USER /home/$USER/.bashrc
+
+if [ "$3" != "" ]; then
+setuser $USER bash -c "source ~/.bashrc; $3"
+else
+setuser $USER bash
+fi

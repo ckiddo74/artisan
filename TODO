@@ -1,0 +1,36 @@
+TODO
+====
+- GIT submit and test from scratch
+
+Next:
+- remove edgHeaderGraph.dot and include_file_graph_from_edg_rose_translation.dot
+- add more comprehensive documentation entity and attribute. Possibly extract from an external file? 
+- documentation: notebook (guide) and reference html (check existing python references)
+- add good enough C++ constructs
+
+New Python interfaces
+=====================
+=> Reporter class => creates a new ast rather than modify existing ast, and creates a new workspace version
+
+Docs and tests
+==============
+=> pytests
+
+(4) ROSE C/C++ exposure
+=======================
+
+=> Tag system to identify key statements and expressions
+=> Function parameters and signature is not well extracted by the python interface - see wrap_fn function, we need to rely
+    on string replacement.
+=> Cannot instrument IF statement bodies. Very likely the 'body' is not passed recursively to the unparser, and thus the instrumentation "specs" get lost. Need a mechanism
+to hook these cases.  
+=> parent_stmt in expression. What is the parent in a condition check inside a for-loop, or other loops?
+
+(5) Memory issues
+=================
+     -> When we sys.exit, it gives problems with __del__, etc. Only works if we del workspace and ast (in that order) before exiting. 
+     -> SourceFileList (child of Project): check this SOB
+
+
+
+

@@ -1,0 +1,42 @@
+#!/bin/bash
+VERSION="19.02.22"
+DESC="(27-10-2018)  First version of IMP's demo"
+DISTRO="artisan-0.5-py3-none-any.whl"
+[ ! $# -eq 0 ] || {
+    echo "Syntax: $0 [-u][-b][-v]"
+    exit -1
+}
+
+options=$(getopt -o ubvr -- "$@")
+[ $? -eq 0 ] || { 
+    echo "Syntax: $0 [-u][-b][-v]"
+    exit -1
+}
+eval set -- "$options"
+while true; do
+    case "$1" in
+    -u)
+        echo "getting package..."
+        wget -O $DISTRO http://www.doc.ic.ac.uk/~jgfc/$DISTRO         
+        ;;
+    -b)
+        DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+        version_line="VERSION=\"$(date +%y.%m.%d)\"" 
+        desc_line="DESC=\"$(head -n 1 $DIR/../CHANGES)\""
+        sed -i "s/^VERSION.*$/$version_line/" $0
+        sed -i "s/^DESC.*$/$desc_line/" $0
+        echo "build done!"
+        ;;
+    -v)
+        echo "Artisan - developed by Gabriel (gabriel.figueiredo@imperial.ac.uk)"        
+        echo "version: $VERSION"
+        echo "description: $DESC"
+        ;;
+    --)
+        shift
+        break
+        ;;
+    esac
+    shift
+done
+

@@ -1,0 +1,82 @@
+{
+	"folders": [
+        {
+            "name": "rose",
+            "path": "artisan/rose"
+        },
+        {
+            "name": "core",
+            "path": "artisan/core"
+        },
+        {
+            "name": "build",
+            "path": "build"
+        }
+    ],
+    "settings": {
+        "files.associations": {
+            "slist": "cpp",
+            "iostream": "cpp",
+            "array": "cpp",
+            "atomic": "cpp",
+            "hash_map": "cpp",
+            "hash_set": "cpp",
+            "strstream": "cpp",
+            "*.tcc": "cpp",
+            "bitset": "cpp",
+            "cctype": "cpp",
+            "chrono": "cpp",
+            "clocale": "cpp",
+            "cmath": "cpp",
+            "complex": "cpp",
+            "condition_variable": "cpp",
+            "csignal": "cpp",
+            "cstdarg": "cpp",
+            "cstddef": "cpp",
+            "cstdint": "cpp",
+            "cstdio": "cpp",
+            "cstdlib": "cpp",
+            "cstring": "cpp",
+            "ctime": "cpp",
+            "cwchar": "cpp",
+            "cwctype": "cpp",
+            "deque": "cpp",
+            "list": "cpp",
+            "unordered_map": "cpp",
+            "unordered_set": "cpp",
+            "vector": "cpp",
+            "exception": "cpp",
+            "fstream": "cpp",
+            "functional": "cpp",
+            "initializer_list": "cpp",
+            "iomanip": "cpp",
+            "iosfwd": "cpp",
+            "istream": "cpp",
+            "limits": "cpp",
+            "memory": "cpp",
+            "mutex": "cpp",
+            "new": "cpp",
+            "optional": "cpp",
+            "ostream": "cpp",
+            "ratio": "cpp",
+            "sstream": "cpp",
+            "stdexcept": "cpp",
+            "streambuf": "cpp",
+            "string_view": "cpp",
+            "system_error": "cpp",
+            "thread": "cpp",
+            "type_traits": "cpp",
+            "tuple": "cpp",
+            "typeindex": "cpp",
+            "typeinfo": "cpp",
+            "utility": "cpp",
+            "valarray": "cpp",
+            "*.dump": "c",
+            "*.ipp": "cpp",
+            "cinttypes": "cpp"
+        },
+        "git.ignoreLimitWarning": true
+    },
+    "editor.quickSuggestions": false,
+    "editor.suggestOnTriggerCharacters": false
+}

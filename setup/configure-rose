@@ -1,0 +1,53 @@
+#!/bin/bash
+
+ROSESRC=$1
+BUILDDIR=$2
+INSTALLDIR=$3
+
+if [ ! $# -eq 3 ]; then
+echo "syntax: $0 <rose-src> <rose-build> <install-dir>"
+exit -1;
+fi
+
+if [ ! -d $ROSESRC ]; then
+echo "cannot find dir $1"
+exit -1;
+fi
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+mkdir -p $BUILDDIR
+cd $BUILDDIR
+
+CXXFLAGS="-Wno-unused-local-typedefs -Wno-unused-variable -Wno-strict-overflow -O3" \
+     $ROSESRC/configure --prefix=$INSTALLDIR \
+                  --disable-xmltest \
+                  --without-java \
+                  --enable-languages="c,c++,opencl,cuda" \
+                  --disable-projects-directory  \
+                  --disable-tutorial-directory \
+                  --disable-tests-directory \
+                  --enable-cuda \
+                  --enable-opencl \
+                  --enable-edg-opencl \
+                  --enable-edg-cuda \
+                  --enable-opencl=yes \
+                  --enable-static=yes \
+                  --enable-edg_version=5.0 \
+                  --enable-shared=yes \
+                  --disable-rosehpct \
+                  --with-boost=$INSTALLDIR  \
+                  --with-boost-libdir=$INSTALLDIR/lib                   
+
+
+
+
+#                  --enable-boost-version-check=no 
+
+#                  --with-boost=$BOOSTDIR \
+#                  --with-boost-libdir=$BOOSTDIR/lib \
+
+#cp $DIR/artifacts/EDG-submodule-sha1 $BUILDDIR/src/frontend/CxxFrontend/
+#cp $DIR/artifacts/roseBinaryEDG* $BUILDDIR/src/frontend/CxxFrontend/
+
+

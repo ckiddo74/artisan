@@ -1,0 +1,56 @@
+#!/bin/bash
+
+IMAGE_NAME="artisan-dev"
+ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+
+if [[ -d /artisan ]]; then
+if [[ "$1" == "--rebuild" || "$1" == "--reset" || "$1" == "--shell" ]]; then
+echo "cannot use '--rebuild|--reset|--shell' parameters inside docker container!"
+exit -1
+else
+# running inside artisan-dev
+/usr/bin/python3 "$@"
+exit 0
+fi  
+fi
+
+IMAGE=`docker images 2> /dev/null | grep $IMAGE_NAME`
+
+if [[ -z "$IMAGE" || "$1" == "--rebuild" || "$1" == "--reset" ]]; then
+   if [[ "$1" == "--reset" ]]; then
+      docker rmi -f $IMAGE_NAME
+   fi 
+   docker build -t $IMAGE_NAME $ROOT_DIR/docker
+   STATUS=$?
+   if [[ "$STATUS" == "0" ]]; then 
+      if [[ "$1" == "--rebuild" || "$1" == "--reset" ]]; then
+         echo -e "\n=> Docker image '$IMAGE_NAME' has been built. \n   Please run '`basename $0`' again to start container."       
+         exit 0
+      fi   
+   else
+     echo -e "\n=> Error building image '$IMAGE_NAME'!"
+     exit $STATUS
+   fi
+fi
+
+if [[ -d $HOME/.ssh ]]; then
+   MOUNT_SSH="-v $HOME/.ssh:$HOME/.ssh"
+else
+   unset MOUNT_SSH
+fi   
+
+if [ "$1" == "--shell" ]; then
+MODE=""
+shift;
+else
+MODE="python3"
+fi
+
+if [ "$#" -lt 1 ]; then
+ unset ARGS
+else
+ ARGS="$MODE $(printf " %q" "${@}")"
+fi
+
+docker run --rm -ti $MOUNT_SSH -v `pwd`:/workspace $CFG -v $ROOT_DIR:/artisan \
+                 -w /workspace artisan-dev /usr/local/bin/runtime-dev $USER `id -u $USER` "$ARGS"
