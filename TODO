@@ -1,9 +1,10 @@
 TODO
 ====
 - remove edgHeaderGraph.dot and include_file_graph_from_edg_rose_translation.dot
-- add more comprehensive documentation entity and attribute. Possibly extract from an external file? 
-- documentation: notebook (guide) and reference html (check existing python references)
-- add good enough C++ constructs
+- documentation: notebook (guide) and reference html (check existing doc from python projects)
+    - add more comprehensive documentation entity and attribute. Possibly extract from an external file? 
+- add a good number of C++ constructs
+- inferring 'root' project from sources may not be good enough. We may want to allow users to specify root dir.
 
 New Python interfaces
 =====================
