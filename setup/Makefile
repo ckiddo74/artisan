@@ -7,8 +7,8 @@ endif
 
 BOOST_VER=62
 ROSEVER=0.9.11.30
-#ROSEREPO=git@github.com:rose-compiler/rose.git
-ROSEREPO=git@gitlab.doc.ic.ac.uk:jgfc/rose-compiler.git
+ROSEREPO=git@github.com:rose-compiler/rose.git
+#ROSEREPO=git@gitlab.doc.ic.ac.uk:jgfc/rose-compiler.git
 
 #ROSE_EDG_URL=http://edg-binaries.rosecompiler.org
 ROSE_EDG_URL=http://www.doc.ic.ac.uk/~jgfc/rose
