@@ -22,6 +22,13 @@ export PATH=<artisan.git>/bin:$PATH
 
 Make sure to login again to load the updated PATH.
 
+To run artisan scripts on the host, either by invoking the `artisan` script or running the python scripts directly, it is required to set the following
+variable:
+
+```
+export ARTISAN_ROOT=<root artisan dir>
+```
+
 ### Step 2: Build and run the Docker development environment 
 
 Run ```artisan``` to load the development environment. If the environment image (```artisan-dev```) is not available, it will automatically build it first. The development environment has the following prompt:

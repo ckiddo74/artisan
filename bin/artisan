@@ -50,6 +50,9 @@ if [ "$#" -lt 1 ]; then
  unset ARGS
 else
  ARGS="$MODE $(printf " %q" "${@}")"
+ if [ ! -z "$ARTISAN_ROOT" ]; then
+    ARGS=`echo $ARGS | sed "s,${ARTISAN_ROOT},/artisan,"`
+ fi   
 fi
 
 docker run --rm -ti $MOUNT_SSH -v `pwd`:/workspace $CFG -v $ROOT_DIR:/artisan \
