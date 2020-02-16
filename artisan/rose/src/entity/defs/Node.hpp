@@ -22,32 +22,32 @@ ENTITY_SPEC_BEGIN(Node, "generic AST node", SgNode, Entity, node, obj, entity, s
          }());
 
     bind_attr(obj, "uid", "unique identifier (within a model)", (int64_t) node);   
-    bind_attr(obj, "tag", "tag", py::str((int64_t) node));
+    bind_attr(obj, "tag", "identifier friendly ", py::str((int64_t) node));
     bind_attr(obj, "sg_type", "ir type", sg_type); 
     bind_attr(obj, "sg_type_real", "ir type", (const char *) node->sage_class_name());                   
 
-    bind_method(obj, "is_entity", "blah", is_entity);
+    bind_method(obj, "is_entity", "returns True if node ", is_entity, (ARG("name")));
 
-    bind_method(obj, "project", "", project);
-    bind_method(obj, "parent", "", parent);
-    bind_method(obj, "children", "my children - node", children);
-    bind_method(obj, "num_children", "", num_children);
-    bind_method(obj, "tree", "",
+    bind_method(obj, "project", "returns parent project node", project);
+    bind_method(obj, "parent", "returns AST parent", parent);
+    bind_method(obj, "children", "returns list of child nodes", children);
+    bind_method(obj, "num_children", "returns number of children", num_children);
+    bind_method(obj, "tree", "returns AST tree: when only_src is True, it  ",
                     tree, 
                     (ARG("depth", -1), 
                     ARG("only_src", true)));  
 
-    bind_method(obj, "query", "beautiful query", 
+    bind_method(obj, "query", "find patterns in the AST", 
                     query, 
                     (ARG("match"), 
                     ARG("where", ""), 
                     ARG("env", boost::python::object())));
     
-    bind_method(obj, "unparse", "", 
+    bind_method(obj, "unparse", "translates AST node to code (string)", 
                         unparse, 
                         (ARG("updates") = true, 
                         ARG("format")=1));  
-    bind_method(obj, "traverse", "", 
+    bind_method(obj, "traverse", "implements visitor pattern", 
                     traverse, 
                     (ARG("pre")=py::object(), 
                     ARG("arg")=py::object(), 
@@ -91,8 +91,8 @@ static std::list<SgNodePtr> children(SgNodePtr self) {
     return lst;
 }   
 
-static int64_t num_children(py::object obj) {
-    SgNode *node = (SgNode *) to_sgnode(obj);  
+static int64_t num_children(py::object self) {
+    SgNode *node = (SgNode *) to_sgnode(self);  
     return node->get_numberOfTraversalSuccessors();
 }   
 
@@ -117,7 +117,7 @@ static std::string unparse(py::object self, bool updates, int format) {
     return code;
 }
 
-static std::string tree(py::object obj, int max_depth, bool only_src) {
+static std::string tree(py::object self, int max_depth, bool only_src) {
     
     struct TreeVisitor: public AstTopDownProcessing<int> {
     std::string _str;
@@ -131,18 +131,23 @@ static std::string tree(py::object obj, int max_depth, bool only_src) {
 
     int evaluateInheritedAttribute(SgNode *node, int depth) {     
         //if (_blacklist.find(node->class_name()) != _blacklist.end()) return depth; 
+        int new_depth = depth;
         if (_max_depth == -1 || depth <= _max_depth) {
             py::object pynode = create_rose_node(node);
-            if (!_only_src || (isSgLocatedNode(node) && (bool) boost::python::extract<bool>(pynode.attr("in_src")()))) {                                        
-                _str += std::string(depth*3, '.') +  (std::string) boost::python::extract<std::string>(pynode.attr("__repr__")());
+            if (!_only_src || (isSgLocatedNode(node) && (bool) boost::python::extract<bool>(pynode.attr("in_code")()))) {                                        
+                std::string code = (std::string) boost::python::extract<std::string>(pynode.attr("__repr__")());
+                std::string line(code.begin(), std::find(code.begin(), code.end(), '\n'));
+
+                _str += std::string(depth*3, '-') + line + "\n";
+                new_depth = new_depth + 1;
             }  
         }   
         
-        return depth + 1;
+        return new_depth;
     }     
     };
 
-    SgNode *node = (SgNode *) to_sgnode(obj);
+    SgNode *node = (SgNode *) to_sgnode(self);
     TreeVisitor tv(max_depth, only_src);
     tv.traverse(node, 0);
     return tv._str;

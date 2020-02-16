@@ -2,11 +2,15 @@
 
 IMAGE_NAME="artisan-dev"
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
+ARTISAN_ROOT="/artisan/artisan"
 
 if [[ -d /artisan ]]; then
 if [[ "$1" == "--rebuild" || "$1" == "--reset" || "$1" == "--shell" ]]; then
 echo "cannot use '--rebuild|--reset|--shell' parameters inside docker container!"
 exit -1
+elif [[ "$1" == '--root' ]]; then
+echo $ARTISAN_ROOT
+exit 0
 else
 # running inside artisan-dev
 /usr/bin/python3 "$@"

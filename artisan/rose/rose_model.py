@@ -4,6 +4,10 @@ import os
 import shlex
 import pathlib
 
+from pygments import highlight
+from pygments.lexers.c_cpp import CppLexer
+from pygments.formatters import Terminal256Formatter
+
 from artisan.core import *
 import artisan.core.path as artcore_path
 
@@ -26,6 +30,8 @@ def cli():
 
    log.debug(2, "cli args: %s" % lst_args, "cli")
 
+   lst_args.extend(['-I/artisan/artisan/rose/repo/cpp'])
+
    args = ' '.join(lst_args)
    return args
 
@@ -35,13 +41,9 @@ class Model:
        'C89'   :   {'rose-args': ['-rose:c89_only'], 'language': 'C', 'std': 'C89' },
        'C99'   :   {'rose-args': ['-rose:c99_only'], 'language': 'C', 'std': 'C99' },
        'C11'   :   {'rose-args': ['-rose:c11_only'], 'language': 'C', 'std': 'C11' },
-       'C14'   :   {'rose-args': ['-rose:c14_only'], 'language': 'C', 'std': 'C14' },
-       'C++' :   {'rose-args': ['-rose:cxx17_only'], 'language': 'C++', 'std': 'C++17' },
+       'C++' :   {'rose-args': ['-rose:cxx11_only'], 'language': 'C++', 'std': 'C++11' },
        'C++89' :   {'rose-args': ['-rose:cxx_only'], 'language': 'C++', 'std': 'C++89' },
        'C++11' :   {'rose-args': ['-rose:cxx11_only'], 'language': 'C++', 'std': 'C++11' },
-       'C++14' :   {'rose-args': ['-rose:cxx14_only'], 'language': 'C++', 'std': 'C++14' },
-       'C++17' :   {'rose-args': ['-rose:cxx17_only'], 'language': 'C++', 'std': 'C++17' }
-
     }    
 
 
@@ -78,6 +80,7 @@ class Model:
             sid_status = ws.verify_sid(self.sid)
             
             if sid_status == ws.SID_OK:
+                print("B1")
                 # we should load the snapshot                                              
                 if (step != None): 
                    #ws.rollback(self.sid)
@@ -86,6 +89,7 @@ class Model:
                 new_path = ws.path(self.sid)
                 (self.args["sources"], self.args["workdir"]) = artcore_path.translate_paths(self.args["workdir"], new_path , self.args["sources"])   
                 self.__run_frontend()
+
             elif (sid_status == ws.SID_STEP_OUT_OF_RANGE):
                 raise RuntimeError("invalid step specified (out of range!)")          
             elif (sid_status == ws.SID_VERSION_FOLDER_NOT_FOUND):
@@ -93,12 +97,18 @@ class Model:
                new_path = ws.path(self.sid)
                (self.args["sources"], self.args["workdir"]) = artcore_path.translate_paths(self.args["workdir"], new_path , self.args["sources"])
                self.__run_frontend()
-
-               self.commit("initial code", sync=True)
+               # In principle, it is not required to sync
+               self.commit("initial code", sync=False) 
         else:  
                self.__run_frontend()
         
-        self._update_workspace_sid()    
+        self._update_workspace_sid()  
+
+    def print(self):
+        if self.project is None:
+            raise RuntimeError("project is None!")
+        print(highlight(self.project.unparse(), CppLexer(), Terminal256Formatter()))
+        
         
     @classmethod
     def __process_args(cls, args, workdir, std):
@@ -205,8 +215,8 @@ class Model:
             if s_step == None:
                 s_step = w_step
 
-            exp_sid = Workspace.to_sid(s_version, s_step)   
-        print("export...", target_dir, exp_sid)
+            exp_sid = Workspace.to_sid(s_version, s_step)  
+        log.debug(1, "exporting to path '%s' from '%s'" % (target_dir, exp_sid), "cli") 
         self.ws.export_to(target_dir, exp_sid, overwrite)    
     
     def execute(self, compiler=None, app_name=None, app_args=None, extra_flags=None, silence=True):

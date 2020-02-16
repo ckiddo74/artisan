@@ -9,6 +9,18 @@
 
 
 boost::python::object create_rose_node(SgNode *node);
+
+template <typename Iter>
+boost::python::list create_rose_nodes(Iter it, Iter end) {
+    boost::python::list lst = boost::python::list();
+    for (; it != end; ++it) {
+        lst.append(create_rose_node(*it));
+    }
+    
+    return lst;   
+
+}
+
 boost::python::object __frontend(std::list<std::string> args);
 void __destroy_project(boost::python::object prj);
 

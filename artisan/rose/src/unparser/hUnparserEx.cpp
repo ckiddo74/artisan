@@ -105,14 +105,16 @@ string HUnparserEx::eval_code(SgNode *node, const RewriteAttr::Spec &spec) {
     return _code;
 }
 
-/* statement instrumentation: before around { begin ... end } after */
+// TODO: Possibly remove rp_begin and rp_end
+
+/* statement instrumentation: before replace { begin ... end } after */
 string HUnparserEx::instrument(SgStatement *stmt, SgUnparse_Info& info, const string &code) {    
    HUnparserEx::RewriteAttr *rs = query_spec(stmt);
    string instr_str = code;
 
    if (rs) {
       HUnparserEx::RewriteAttr::Spec spec;
-      if (rs->get_spec(HUnparserEx::RewriteAttr::rp_around, spec)) {
+      if (rs->get_spec(HUnparserEx::RewriteAttr::rp_replace, spec)) {
          instr_str = eval_code(stmt, spec);
       }
       if (rs->get_spec(HUnparserEx::RewriteAttr::rp_before, spec)) {
@@ -121,28 +123,43 @@ string HUnparserEx::instrument(SgStatement *stmt, SgUnparse_Info& info, const st
       if (rs->get_spec(HUnparserEx::RewriteAttr::rp_after, spec)) {
          instr_str = instr_str + eval_code(stmt, spec);
       }
-      if (rs->get_spec(HUnparserEx::RewriteAttr::rp_begin, spec)) {
+      if (rs->get_spec(HUnparserEx::RewriteAttr::rp_begin, spec)) {          
           SgBasicBlock *block = isSgBasicBlock(stmt);
-          hAssert(block, "invalid instrumentation directive <begin> in a non-block construct!");
-
-          std::size_t pos = instr_str.find_first_of("{");
-          string before, after;
-          if (pos != std::string::npos) {
-              before = instr_str.substr(0, pos);
-              after = instr_str.substr(pos+1);         
-              instr_str = before + "{" + eval_code(stmt, spec) + after;
+          if (block) {
+            std::size_t pos = instr_str.find_first_of("{");
+            string before, after;
+            if (pos != std::string::npos) {
+               before = instr_str.substr(0, pos);
+               after = instr_str.substr(pos+1);         
+               instr_str = before + "{" + eval_code(stmt, spec) + after;
+            }
+          } else {
+             SgGlobal *global = isSgGlobal(stmt);
+             if (global) {
+                instr_str = eval_code(stmt, spec) + instr_str;
+             } else {
+                hAssert(0, "invalid instrumentation directive <begin> in a non-block/global construct!");
+             }
           }
       }
       if (rs->get_spec(HUnparserEx::RewriteAttr::rp_end, spec)) {
           SgBasicBlock *block = isSgBasicBlock(stmt);
-          hAssert(block, "invalid instrumentation directive <end> in a non-block construct!");
 
-          std::size_t pos = instr_str.find_last_of("}");
-          string before, after;
-          if (pos != std::string::npos) {
-              before = instr_str.substr(0, pos);
-              after = instr_str.substr(pos+1);         
-              instr_str = before + eval_code(stmt, spec) + "}" + after;
+          if (block) {          
+            std::size_t pos = instr_str.find_last_of("}");
+            string before, after;
+            if (pos != std::string::npos) {
+               before = instr_str.substr(0, pos);
+               after = instr_str.substr(pos+1);         
+               instr_str = before + eval_code(stmt, spec) + "}" + after;
+            }
+          } else {
+             SgGlobal *global = isSgGlobal(stmt);
+             if (global) {
+                instr_str = instr_str + eval_code(stmt, spec);
+             } else {
+                hAssert(0, "invalid instrumentation directive <end> in a non-block/global construct!");
+             }             
           }
       }
 
@@ -151,14 +168,14 @@ string HUnparserEx::instrument(SgStatement *stmt, SgUnparse_Info& info, const st
     return instr_str;
 }
 
-/* expression instrumentation: <before> <around> <after> */
+/* expression instrumentation: <before> <replace> <after> */
 string HUnparserEx::instrument(SgExpression *expr, SgUnparse_Info& info, const std::string &code) {
    HUnparserEx::RewriteAttr *rs = query_spec(expr);
    string instr_str = code;
 
    if (rs) {
       HUnparserEx::RewriteAttr::Spec spec;
-      if (rs->get_spec(HUnparserEx::RewriteAttr::rp_around, spec)) {
+      if (rs->get_spec(HUnparserEx::RewriteAttr::rp_replace, spec)) {
          instr_str = eval_code(expr, spec);
       }
       if (rs->get_spec(HUnparserEx::RewriteAttr::rp_before, spec)) {

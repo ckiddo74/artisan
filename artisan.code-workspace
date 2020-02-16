@@ -73,7 +73,19 @@
             "valarray": "cpp",
             "*.dump": "c",
             "*.ipp": "cpp",
-            "cinttypes": "cpp"
+            "cinttypes": "cpp",
+            "Cxx_Grammar.C": "cpp",
+            "string": "cpp",
+            "regex": "cpp",
+            "codecvt": "cpp",
+            "algorithm": "cpp",
+            "filesystem": "cpp",
+            "iterator": "cpp",
+            "map": "cpp",
+            "memory_resource": "cpp",
+            "numeric": "cpp",
+            "set": "cpp",
+            "cfenv": "cpp"
         },
         "git.ignoreLimitWarning": true
     },

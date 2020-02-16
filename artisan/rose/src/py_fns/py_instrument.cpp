@@ -15,22 +15,26 @@ void py_instrument(py::object self, string where, string code, py::object env, b
           "internal error: cannot instrument node: not a source construct!");   
 
       // argument validation
-      hAssert(isSgBasicBlock(node) || !isSgLocatedNode(node) || where == "before" || where == "after" || where == "around",
-             "source construct can only be instrumented in 'before', 'after' or 'around' position!");
-
-      hAssert(!isSgBasicBlock(node) || where == "before" || where == "after" || where == "around" || 
+      hAssert(!isSgBasicBlock(node) || where == "before" || where == "after" || where == "replace" || 
                where == "begin" || where == "end",
-             "block can only be instrumented in 'before', 'after', 'around', 'begin' or 'exit' position!");
+             "block can only be instrumented in 'before', 'after', 'replace', 'begin' or 'end' position!");
+
+      hAssert(!isSgGlobal(node) || where == "before" || where == "after" || where == "replace" || 
+               where == "begin" || where == "end",
+             "global can only be instrumented in 'before', 'after', 'replace', 'begin' or 'end' position!");             
 
       hAssert(!isSgType(node) || where == "before" || where == "after",
              "types can only be instrumented in 'before' or 'after' position!");
+
+      hAssert(isSgBasicBlock(node) || isSgGlobal(node) || !isSgLocatedNode(node) || where == "before" || where == "after" || where == "replace",
+             "source construct can only be instrumented in 'before', 'after' or 'replace' position!");
 
 
       HUnparserEx::RewriteAttr::Position pos;     
       if (where == "before") {
          pos = HUnparserEx::RewriteAttr::rp_before; 
-      } else if (where == "around") {
-         pos = HUnparserEx::RewriteAttr::rp_around;
+      } else if (where == "replace") {
+         pos = HUnparserEx::RewriteAttr::rp_replace;
       } else if  (where == "after") { 
          pos = HUnparserEx::RewriteAttr::rp_after;
       } else if (where == "begin") {

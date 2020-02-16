@@ -23,7 +23,7 @@ public:
       Spec() { code = "";  append = false; env = boost::python::object();}
    };
 
-   typedef enum { rp_before, rp_around, rp_after, rp_begin, rp_end  } Position;
+   typedef enum { rp_before, rp_replace, rp_after, rp_begin, rp_end  } Position;
    RewriteAttr();
    
    void register_spec(Position pos, const Spec &spec);

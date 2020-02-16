@@ -54,7 +54,7 @@ class Meta:
         all_entities = Meta.entities        
         info = Meta.info(entity)
         
-        Meta.pp_info(entity)
+        #Meta.pp_info(entity)
         
         frame = color('='*(len(entity)+6), fg='grey', style='bold')
         print("\n%s\n%s\n%s" % (frame, color("HELP: %s" % entity, fg='white',  style='bold'), frame))

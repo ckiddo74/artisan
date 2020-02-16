@@ -3,7 +3,7 @@
 #include "Node.hpp"
 
 ENTITY_SPEC_BEGIN(File, "AST node representing a source file", SgSourceFile, Node, node, obj, entity, sg_type) {
-    //obj.attr("name") = node->getFileName();
+    // obj.attr("name") = node->getFileName();
 
     // base name
     //obj.attr("tag") = py::str(boost::filesystem::path (node->getFileName()).filename().string());
