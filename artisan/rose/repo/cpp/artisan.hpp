@@ -34,22 +34,28 @@ public:
 
 
     static void report(std::string name) {
-        printf("{\n");
+        FILE *fp = fopen(name.c_str(),"w");
+        fprintf(fp, "{\n");
+        bool outer_first = true;
         for (auto k: _vals) {
-            printf("   \"%s\": [\n", k.first.c_str());
+            if (!outer_first) 
+                fprintf(fp, "    ],\n");
+            outer_first =  false;
+            fprintf(fp, "   \"%s\": [\n", k.first.c_str());
             Val &val = k.second;
             bool first = true;
             for (auto d: val.data) {
                 if (first) {
-                   printf("      %.2f\n", d);
+                   fprintf(fp, "      %.2f\n", d);
                    first = false;
                 } else {
-                    printf("    , %.2f\n", d);
+                    fprintf(fp, "    , %.2f\n", d);
                 }
             }
-            printf("    ]\n");
+            // fprintf(fp, "    ],\n");
         }
-        printf("}\n");
+        fprintf(fp, "    ]\n}\n");
+        fclose(fp);
     }
 private:
     struct Val {
