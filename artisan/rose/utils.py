@@ -1,7 +1,46 @@
 from .rose_meta import meta
 
-def scopify(ast):
-    pass
+# right now only works with loops
+def scopify(root):
+   # find our target elements
+   scopes = root.query("s:Scope")
+   for _scope in scopes:
+       scope = _scope.s
+       if hasattr(scope, 'body'):
+            body = scope.body()
+            if body and body.entity != 'Block':
+                body.instrument(pos="before", code="{")
+                body.instrument(pos="replace", code="{@ _.unparse() @}")           
+                body.instrument(pos="after", code="}")
+   '''
+   BUG: cannot instrument if statement bodies
+   conditionals = ast.query("if:IfStmt")
+   for ifstmt in conditionals:
+        tbody = ifstmt.body()
+        ebody = ifstmt.body_else()
+        cond = ifstmt.cond().unparse(format=3)
+
+        if tbody:
+            if tbody.entity == "Block":
+                tbody_str = "{@ tbody.unparse() @}" 
+            else:
+                tbody_str = "{ {@ tbody.unparse() @} }"
+        else:
+            tbody_str = "{ }"
+            
+        if ebody:
+            if ebody.entity == "Block":
+                ebody_str = "else {@ ebody.unparse() @}"
+            else:
+                ebody_str = "else { {@ ebody.unparse() @} }"
+        elif incl_missing_else:
+            ebody_str = "else { }"
+        else:
+            ebody_str = ""            
+
+        ifstmt.instrument(where="around", code = "if (%s) %s%s" % (cond, tbody_str, ebody_str), env={'tbody': tbody, 'ebody': ebody})
+    '''
+
 
 def query_loops(root, for_loop=True, while_loop=True, do_loop=True):
     loop_type = []
