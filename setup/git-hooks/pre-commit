@@ -1,0 +1,3 @@
+#!/bin/bash 
+touch .commit 
+exit 0

@@ -1,0 +1,14 @@
+#!/bin/bash 
+
+if [ -e .commit ]
+    then
+    rm -rf .commit
+    rm -rf artisan/rose/src/version.hpp
+    echo "#define ARTISAN_VERSION \"`date '+%y%m-%d'`\"" >> artisan/rose/src/version.hpp
+    echo "#define ARTISAN_DESC \"`git log --format=%B -n 1 HEAD | head -1`\"" >> artisan/rose/src/version.hpp
+    git add artisan/rose/src/version.hpp
+    git commit --amend -C HEAD --no-verify
+fi
+exit 0
+
+
