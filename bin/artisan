@@ -4,6 +4,17 @@ IMAGE_NAME="artisan-dev"
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/.."
 ARTISAN_ROOT="/artisan/artisan"
 
+## version support
+if [[ "$1" == "--version" ]]; then
+   if [[ -d /artisan ]]; then 
+      /usr/bin/python3 -c "from build.lib.artrose import version; print(version())"
+   else
+      docker run --rm -w /artisan -v ~/Work/artisan.git:/artisan artisan-dev bash -c "/usr/bin/python3 -c \"from build.lib.artrose import version;print(version())\""      
+   fi   
+
+   exit 0   
+fi   
+
 if [[ -d /artisan ]]; then
 if [[ "$1" == "--rebuild" || "$1" == "--reset" || "$1" == "--shell" ]]; then
 echo "cannot use '--rebuild|--reset|--shell' parameters inside docker container!"
@@ -60,4 +71,4 @@ else
 fi
 
 docker run --rm -ti $MOUNT_SSH -v `pwd`:/workspace $CFG -v $ROOT_DIR:/artisan \
-                 -w /workspace artisan-dev /usr/local/bin/runtime-dev $USER `id -u $USER` "$ARGS"
+                 -w /workspace $IMAGE_NAME /usr/local/bin/runtime-dev $USER `id -u $USER` "$ARGS"

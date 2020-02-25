@@ -9,12 +9,14 @@
 #include <py_types/py_types.hpp>
 
 #include <utils/hmsg.hpp>
+#include <utils/tinyformat.hpp>
 
 #include <entity/EntityManager.hpp>
 #include <py_sgnode.hpp>
 #include <py_fns/py_query.hpp>
 #include <py_fns/py_unparse_prj.hpp>
 #include <py_fns/py_meta.hpp>
+#include <version.hpp>
 
 using namespace std;
 
@@ -47,6 +49,10 @@ void __set_verbose_level(py::tuple lvl) {
    } 
 } 
 
+string __version() {
+   return tfm::format("artisan rose: v%s - %s", ARTISAN_VERSION, ARTISAN_DESC);
+}
+
 BOOST_PYTHON_MODULE(artrose)
 {
 
@@ -60,7 +66,8 @@ BOOST_PYTHON_MODULE(artrose)
     py::def("set_verbose_level", __set_verbose_level);
     py::def("unparse_prj", __unparse_prj);
     py::def("meta_entities", __meta_entities, meta_entities_overload());
-    py::def("meta_info", __meta_info);    
+    py::def("meta_info", __meta_info); 
+    py::def("version", __version);   
     
     try {
        EntityManager::register_entities();  
