@@ -10,10 +10,17 @@ ENTITY_SPEC_BEGIN(FnDef, "function definition (function declaration + body)", Sg
 
     if (node) {
         name = node->get_declaration()->get_name().getString(); 
-    }
+    } 
     
     bind_attr(obj, "name", "function name", name);
-    bind_attr(obj, "tag", "function name", name);    
+    bind_method(obj, "tag", "function name", tag);    
+}
+
+static std::string tag(SgNodePtr self) {
+     SgFunctionDefinition *node = isSgFunctionDefinition(self);
+
+     return node->get_declaration()->get_name().getString(); 
+
 }
 
 static py::object body(py::object self) {

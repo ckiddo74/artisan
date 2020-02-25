@@ -40,7 +40,7 @@ bool eval_tag(string tag, SgNode *node) {
    if (tag.empty()) return true;
    
    py::object obj = create_rose_node(node);
-   string obj_tag = py::extract<string>(obj.attr("tag"));
+   string obj_tag = py::extract<string>(obj.attr("tag")());
    //printf(":TAG:> %s, cond_tag: %s\n", obj_tag.c_str(), tag.c_str());
    
    smatch m;

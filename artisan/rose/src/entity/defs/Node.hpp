@@ -21,10 +21,11 @@ ENTITY_SPEC_BEGIN(Node, "generic AST node", SgNode, Entity, node, obj, entity, s
               return lst;
          }());
 
-    bind_attr(obj, "uid", "unique identifier (within a model)", (int64_t) node);   
-    bind_attr(obj, "tag", "identifier friendly ", py::str((int64_t) node));
+    bind_attr(obj, "uid", "unique identifier", (int64_t) node);   
     bind_attr(obj, "sg_type", "ir type", sg_type); 
     bind_attr(obj, "sg_type_real", "ir type", (const char *) node->sage_class_name());                   
+
+    bind_method(obj, "tag", "", tag);
 
     bind_method(obj, "is_entity", "returns True if node ", is_entity, (ARG("name")));
 
@@ -55,6 +56,14 @@ ENTITY_SPEC_BEGIN(Node, "generic AST node", SgNode, Entity, node, obj, entity, s
                     ARG("post")=py::object()));               
 }
 
+static std::string tag(SgNodePtr self) {
+     SgNode *node =  self;
+
+     std::string entity = EntityManager::expect_sg_entity(node->sage_class_name());
+
+     hAssert(false, "Entity '%s' does not support tag!", entity); 
+
+}
 static bool is_entity(py::object self, std::string name) {
     SgNode *node = to_sgnode(self);
 
