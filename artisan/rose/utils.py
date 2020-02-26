@@ -89,7 +89,48 @@ def instrument_block(block, code, entry=False, exit=False):
             block.instrument(pos='end', code=code)
 
         
+def wrap_fn(root, fn_name, fn_new_name, before="", after="", begin_code="", end_code=""):
+    r = root.query("g:Global => f:FnDef{%s}" % fn_name)
+    if not r:
+        raise RuntimeError("cannot find the '%s' function!" % fn_name)
+    
+    fn = r[0].f
+    gb = r[0].g
 
+    # we need a better way to wrap a function - right now
+    # we are doingtoo much string search-replace
+
+    fn_str = fn.unparse()
+
+    p = fn_str.index("(")
+    b = fn_str.index("{")
+    fn0 = fn_str[0:p]
+    params = fn_str[p:b]
+    body = fn_str[b:]
+    fn0_new = fn0.replace("main", fn_new_name)
+
+    fn_args = ", ".join([p.name for p in fn.decl().params()])
+    fn_ret_type = fn.decl().return_type().unparse(format=2)
+
+    if fn_ret_type != "void":
+        decl_val = "%s __retval = " % fn_ret_type 
+        ret_stmt = "return __retval;\n"
+    else:
+        decl_val = ""
+        ret_stmt = ""
+
+    fn.instrument(pos="replace", code=fn0_new+params+body)
+    fn.instrument(pos="after", code=fn0+params+"{\n" +
+                                            before + "\n" +
+                                            "%s%s(%s);\n" % (decl_val, fn_new_name, fn_args) +
+                                            after + "\n" +
+                                            ret_stmt +
+                                            "}")
+    if begin_code != "":
+        gb.instrument(pos="begin", code=begin_code)
+    if end_code != "":
+        gb.instrument(pos="end", code=end_code)
+    
          
 
 
