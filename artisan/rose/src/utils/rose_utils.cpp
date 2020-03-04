@@ -81,3 +81,27 @@ string RoseUtils::unparse_code(SgNode *node, bool with_updates, bool with_pretty
     }   
     delete unparser;
 }
+
+/************
+ * list<SgNode *>
+FunctionCallNormalization::BFSQueryForNodes( SgNode *root, VariantT type )
+{
+  list<SgNode *> toVisit, retList;
+  toVisit.push_back( root );
+
+  while ( !toVisit.empty() )
+    {
+      SgNode *crt = toVisit.front();
+      if ( crt->variantT() == type )
+        retList.push_back( crt );
+      
+      vector<SgNode *> succ = ( crt )->get_traversalSuccessorContainer();
+      for ( vector<SgNode *>::iterator succIt = succ.begin(); succIt != succ.end(); succIt++ )
+        if ( isSgNode ( *succIt ) )
+          toVisit.push_back( *succIt );
+      
+      toVisit.pop_front();
+    }
+  return retList;
+}
+*/
