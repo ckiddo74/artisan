@@ -191,14 +191,32 @@ class Model:
         self.ws.commit(sid=self.ws.sid2sid(self.sid, incl_step = False), description=desc)
         self._update_workspace_sid()  
         if sync:
-           self.sync()        
+           self.sync()    
+           
+    def undo(self, n=1, sync=True):
+        if self.ws == None:
+            raise RuntimeError("cannot commit: model requires a workspace!")   
+        
+        (version, _) = Workspace.parse_sid(self.sid)
+        num_steps = self.ws.num_steps(Workspace.to_sid(version))             
+        step = num_steps - n
+        if step <= 0:
+            raise RuntimeError("Invalid number of steps: %d" % n)
+        roll_sid = Workspace.to_sid(version, step) 
+        self.ws.rollback(sid=roll_sid)
+        if sync:
+            self.sync()
+        else:
+            self._update_workspace_sid() 
+        
     
     def sync(self):
        if not self.ws:
            raise RuntimeError("cannot sync without workspace!") 
 
        self.__run_frontend() 
-       self._update_workspace_sid()           
+       self._update_workspace_sid()
+                 
 
     def export_to(self, target_dir, sid="", overwrite=True):
         if self.ws == None:

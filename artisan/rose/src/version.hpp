@@ -1,2 +1,2 @@
-#define ARTISAN_VERSION "2002-26"
-#define ARTISAN_DESC "support for wrapper functions (utils.py)"
+#define ARTISAN_VERSION "2003-04"
+#define ARTISAN_DESC "support for ast.undo(n=steps, sync=True/False) to rollback"
