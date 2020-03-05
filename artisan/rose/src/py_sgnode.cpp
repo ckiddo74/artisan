@@ -143,10 +143,17 @@ py::object create_rose_node(SgNode *node) {
    Py_INCREF(obj.ptr());
    // let's keep tab of all python ROSE nodes
    PrjAttribute *attr = (PrjAttribute *) node->getAttribute("project");
-   hAssert(attr, "Unable to create python ROSE node [%s]: it is not associated to project!", node->class_name().c_str());
-   SgProject *prj = attr->prj();
-   rose_objs[prj].push_back(obj); 
-   hAssert(Py_REFCNT(obj.ptr()) == 3, "Generating Python ROSE object (%s) with reference count different than three: %d!", node->class_name().c_str(), Py_REFCNT(obj.ptr()));
+   //hAssert(attr, "Unable to create python ROSE node [%s]: it is not associated to project!", node->class_name().c_str());   
+   
+   if (attr) {    
+      SgProject *prj = attr->prj();
+      rose_objs[prj].push_back(obj); 
+      hAssert(Py_REFCNT(obj.ptr()) == 3, "Generating Python ROSE object (%s) with reference count different than three: %d!", node->class_name().c_str(), Py_REFCNT(obj.ptr()));      
+   } else {
+      hAssert(Py_REFCNT(obj.ptr()) == 2, "Generating Python ROSE object (%s) with reference count different than two: %d!", node->class_name().c_str(), Py_REFCNT(obj.ptr()));      
+
+   }
+   
    return obj;
 }
 

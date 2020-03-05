@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Node.h"
+#include "Node.hpp"
 #include <instrumentation/py_instrument.h>
 
 NODE_SPEC_BEGIN(Type, SgType, Node, node, obj) {
