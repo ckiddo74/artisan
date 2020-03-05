@@ -107,7 +107,7 @@ def wrap_fn(root, fn_name, fn_new_name, before="", after="", begin_code="", end_
     fn0 = fn_str[0:p]
     params = fn_str[p:b]
     body = fn_str[b:]
-    fn0_new = fn0.replace("main", fn_new_name)
+    fn0_new = fn0.replace(fn_name, fn_new_name)
 
     fn_args = ", ".join([p.name for p in fn.decl().params()])
     fn_ret_type = fn.decl().return_type().unparse(format=2)
