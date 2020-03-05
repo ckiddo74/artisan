@@ -32,6 +32,8 @@ ENTITY_SPEC_BEGIN(Node, "generic AST node", SgNode, Entity, node, obj, entity, s
     bind_method(obj, "project", "returns parent project node", project);
     bind_method(obj, "parent", "returns AST parent", parent);
     bind_method(obj, "children", "returns list of child nodes", children);
+    bind_method(obj, "prev", "returns previous sibling", prev);
+    bind_method(obj, "next", "returns next sibling", next);
     bind_method(obj, "num_children", "returns number of children", num_children);
     bind_method(obj, "tree", "returns AST tree: when only_src is True, it  ",
                     tree, 
@@ -232,5 +234,37 @@ static py::object traverse(py::object root, py::object pre, py::object arg, py::
     return t._env;
 
 }
+
+static py::object prev(py::object self) {
+    SgNode *node = (SgNode *) to_sgnode(self);
+    SgNode *parent = node->get_parent();
+    
+    if (!parent) return py::object();    
+    size_t idx = parent->get_childIndex(node);
+
+    if ((idx -1)  < 0) {
+        return py::object();
+    }
+
+    return create_rose_node(parent->get_traversalSuccessorByIndex(idx-1));
+}
+
+static py::object next(py::object self) {
+    SgNode *node = (SgNode *) to_sgnode(self);
+
+    SgNode *parent = node->get_parent();
+    
+    if (!parent) return py::object();
+
+    size_t idx = parent->get_childIndex(node);
+
+    if ((idx + 1) >= parent->get_numberOfTraversalSuccessors ()) {
+        return py::object();
+    }
+
+    return create_rose_node(parent->get_traversalSuccessorByIndex(idx+1));
+
+}
+
   
 ENTITY_SPEC_END
