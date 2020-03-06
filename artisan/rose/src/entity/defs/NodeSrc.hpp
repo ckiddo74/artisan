@@ -10,7 +10,7 @@
 #include <py_fns/py_instrument.hpp>
 #include <boost/filesystem.hpp>
 
-ENTITY_SPEC_BEGIN(SrcNode, "AST nodes that have source locations", SgLocatedNode, Node, node, obj, entity, sg_type) {
+ENTITY_SPEC_BEGIN(NodeSrc, "AST nodes that have source locations", SgLocatedNode, Node, node, obj, entity, sg_type) {
     bind_method(obj, "instrument", "inject code in node (pos=[before/replace/after])", instrument, (ARG("pos"), ARG("code"), ARG("env", py::object()), ARG("auto_sp", true), ARG("append", true)));
     bind_method(obj, "in_code", "whether it is part of the input source code (.cpp)", in_code);
     bind_method(obj, "coords", "return construct coordinates as tuple (filename, line, column) - use full_path=True to return full path", coords, ARG("full_path", false))

@@ -1,2 +1,2 @@
-#define ARTISAN_VERSION "2003-04"
-#define ARTISAN_DESC "returns different components of the for-loop statement: init(), cond() and incr()"
+#define ARTISAN_VERSION "2003-05"
+#define ARTISAN_DESC "support for 'new' and 'delete'"

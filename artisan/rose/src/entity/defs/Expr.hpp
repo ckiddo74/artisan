@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SrcNode.hpp"
+#include "NodeSrc.hpp"
 
-ENTITY_SPEC_BEGIN(Expr, "expression", SgExpression, SrcNode, node, obj, entity, sg_type) {
+ENTITY_SPEC_BEGIN(Expr, "expression", SgExpression, NodeSrc, node, obj, entity, sg_type) {
     bind_method(obj, "type", "returns expression type", type);
     bind_method(obj, "is_val", "returns whether expression represents a constant value", is_val);
 

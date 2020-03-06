@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SrcNode.hpp"
+#include "NodeSrc.hpp"
 
-ENTITY_SPEC_BEGIN(VarDef, "Variable Definition", SgInitializedName, SrcNode, node, obj, entity, sg_type) {
+ENTITY_SPEC_BEGIN(VarDef, "Variable Definition", SgInitializedName, NodeSrc, node, obj, entity, sg_type) {
     std::string name;
 
     if (node) {

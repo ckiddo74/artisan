@@ -1,8 +1,8 @@
 #pragma once
 
-#include "SrcNode.hpp"
+#include "NodeSrc.hpp"
 
-ENTITY_SPEC_BEGIN(Stmt, "code statements", SgStatement, SrcNode, node, obj, entity, sg_type) {
+ENTITY_SPEC_BEGIN(Stmt, "code statements", SgStatement, NodeSrc, node, obj, entity, sg_type) {
     bind_method(obj, "index", "returns child position in relation to its parent", index);   
 }
 
