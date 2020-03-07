@@ -76,7 +76,7 @@ def instrument_block(block, code, entry=False, exit=False):
             if not end_stmt and r.ret.parent().uid == block.uid and r.ret.index() == nstmts-1:
                 end_stmt=True
 
-        calls = block.query("call:Call")
+        calls = block.query("call:ExprCall")
         for c in calls:
             if c.call.name() == 'exit':
                 stmt = c.call.stmt()        
