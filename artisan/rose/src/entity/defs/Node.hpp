@@ -27,7 +27,7 @@ ENTITY_SPEC_BEGIN(Node, "generic AST node", SgNode, Entity, node, obj, entity, s
 
     bind_method(obj, "tag", "", tag);
 
-    bind_method(obj, "is_entity", "returns True if node ", is_entity, (ARG("name")));
+    bind_method(obj, "is_entity", "returns True if node is entity specified by name. Note that \"name\" argument can be a string or a list of strings.", is_entity, (ARG("name")));
 
     bind_method(obj, "project", "returns parent project node", project);
     bind_method(obj, "parent", "returns AST parent", parent);
@@ -66,13 +66,32 @@ static std::string tag(SgNodePtr self) {
      hAssert(false, "Entity '%s' does not support tag!", entity); 
 
 }
-static bool is_entity(py::object self, std::string name) {
+static bool is_entity(py::object self, py::object name) {
     SgNode *node = to_sgnode(self);
+
+    std::list<std::string> names;
+
+    py::extract<std::string> _name(name);
+
+    if (_name.check()) {
+        names.push_front(_name);
+    } else {
+        boost::python::extract<std::list<std::string> > _names(name);       
+        hAssert(_names.check(), "\"name\" must be a string or list of strings!"); 
+        names = _names;
+    } 
 
     std::string entity = EntityManager::expect_sg_entity(node->sage_class_name());
     std::list<std::string> entities = EntityManager::get_entity(entity)->meta_entities;
-    std::list<std::string>::iterator i = std::find(entities.begin(), entities.end(), name);
-    return i != entities.end();
+
+    for (auto n : names) {
+        std::list<std::string>::iterator i = std::find(entities.begin(), entities.end(), n);
+        if (i != entities.end()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 static SgNodePtr project(SgNodePtr self) {

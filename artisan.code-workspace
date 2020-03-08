@@ -85,7 +85,9 @@
             "memory_resource": "cpp",
             "numeric": "cpp",
             "set": "cpp",
-            "cfenv": "cpp"
+            "cfenv": "cpp",
+            "modified_sage.C": "cpp",
+            "unparseCxx_types.C": "cpp"
         },
         "git.ignoreLimitWarning": true
     },

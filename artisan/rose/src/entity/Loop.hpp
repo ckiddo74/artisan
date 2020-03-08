@@ -2,10 +2,14 @@
 
 #include <string>
 #include <rose.h>
+#include <list>
 #include <utils/tinyformat.hpp>
+#include <utils/rose_utils.hpp>
 #include <sstream>
 
-int loop_pos(SgNode *parent, SgNode *target_child, enum VariantT variant) {
+class LoopUtils {
+private:
+static int __loop_pos(SgNode *parent, SgNode *target_child, enum VariantT variant) {
     int i = 0;
     int pos = 0;
     SgScopeStatement *_parent = isSgScopeStatement(parent);
@@ -26,7 +30,7 @@ int loop_pos(SgNode *parent, SgNode *target_child, enum VariantT variant) {
     return pos;    
 }
 
-std::string loop_alpha(int pos) {
+static std::string __loop_alpha(int pos) {
     std::string ret;
 
     std::ostringstream sstream;
@@ -39,7 +43,8 @@ std::string loop_alpha(int pos) {
     return ret;    
 }
 
-std::string loop_tag(SgNode *node, std::string loop_type, enum VariantT variant) {
+public:
+static std::string loop_tag(SgNode *node, std::string loop_type, enum VariantT variant) {
 
    while (!isSgFunctionDefinition(node) && node->variantT() != variant)  {
        node = node->get_parent();
@@ -52,10 +57,10 @@ std::string loop_tag(SgNode *node, std::string loop_type, enum VariantT variant)
 
    SgNode *parent = node->get_parent();
    
-   int pos = loop_pos(parent, node, variant);
+   int pos = __loop_pos(parent, node, variant);
 
-   std::string tag = loop_tag(node->get_parent(), loop_type, variant);
-   std::string ctag = loop_alpha(pos);
+   std::string tag = LoopUtils::loop_tag(node->get_parent(), loop_type, variant);
+   std::string ctag = __loop_alpha(pos);
 
    if (!tag.empty())  {
        tag = tag + "_" + ctag;
@@ -65,3 +70,53 @@ std::string loop_tag(SgNode *node, std::string loop_type, enum VariantT variant)
    
    return tag;
 }
+
+static bool is_outermost(SgNode *node, bool for_loop, bool while_loop, bool do_loop) {
+    SgNode *parent = node->get_parent();
+
+    // loops until it finds a loop that meets loop type
+    while (parent && ![for_loop, while_loop, do_loop](SgNode *node) -> bool  {             
+            return (node->variantT() == V_SgForStatement && for_loop) || 
+                   (node->variantT() == V_SgWhileStmt && while_loop) ||
+                   (node->variantT() == V_SgDoWhileStmt && do_loop)            
+            ; 
+        } (parent)  ) {
+           parent = parent->get_parent();
+    }
+
+    return parent == NULL;
+}
+
+static bool test(SgNode *, bool &exit);
+
+static bool is_innermost(SgNode *node, bool for_loop, bool while_loop, bool do_loop) {
+
+    struct LoopType {
+        bool for_loop;
+        bool while_loop;
+        bool do_loop;
+        SgNode *node;
+    };
+
+    LoopType lt = { for_loop, while_loop, do_loop, node };
+
+    std::list<SgNode *> nodes = RoseUtils::find_sgnodes(node, [](SgNode *node, void *data, bool &exit) -> bool {
+           LoopType *_data = (LoopType *) data;
+           if (_data->node != node) { // we don't care about the parent node
+                if ( (node->variantT() == V_SgForStatement && _data->for_loop) || 
+                    (node->variantT() == V_SgWhileStmt && _data->while_loop) ||
+                    (node->variantT() == V_SgDoWhileStmt && _data->do_loop) ) {
+                        exit = true;
+                        return true;
+                    }               
+                }      
+           return false; 
+
+        }, &lt, -1);
+
+    // if it is empty, then it is innermost
+    return nodes.empty();
+
+}
+
+};

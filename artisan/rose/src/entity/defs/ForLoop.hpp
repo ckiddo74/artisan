@@ -8,14 +8,16 @@ ENTITY_SPEC_BEGIN(ForLoop, "FOR loop construct", SgForStatement, Scope, node, ob
     bind_method(obj, "init", "init [statements]: for (init;..;..) { }", for_init);
     bind_method(obj, "cond", "cond statement: for (...; cond ;..) { }", for_cond);
     bind_method(obj, "incr", "increment expression: for (...; ... ; incr) { }", for_expr);
-    bind_method(obj, "tag", "loop id", tag);              
+    bind_method(obj, "tag", "loop id", tag);  
+    bind_method(obj, "is_outermost", "returns True if loop is the top-level loop", is_outermost, (ARG("for_loop", true), ARG("while_loop", false), ARG("do_loop", false)));
+    bind_method(obj, "is_innermost", "returns True if loop is innermost", is_innermost, (ARG("for_loop", true), ARG("while_loop", false), ARG("do_loop", false)));
 }
 
 
 static std::string tag(SgNodePtr self) {
      SgForStatement *node = isSgForStatement(self);
 
-     return loop_tag(node, "for", V_SgForStatement);
+     return LoopUtils::loop_tag(node, "for", V_SgForStatement);
 }
 
 static py::object body(py::object self) {
@@ -48,6 +50,15 @@ static py::object for_expr(py::object self) {
     return create_rose_node(for_loop->get_increment());
 }  
 
+static bool is_outermost(py::object self, bool for_loop, bool while_loop, bool do_loop) {
+    SgForStatement *node = to_sgnode(self, SgForStatement);    
+    return LoopUtils::is_outermost(node, for_loop, while_loop, do_loop);
+}
+
+static bool is_innermost(py::object self, bool for_loop, bool while_loop, bool do_loop) {
+    SgForStatement *node = to_sgnode(self, SgForStatement);    
+    return LoopUtils::is_innermost(node, for_loop, while_loop, do_loop);
+}
 ENTITY_SPEC_END
 
 

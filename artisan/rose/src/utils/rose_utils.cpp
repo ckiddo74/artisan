@@ -22,21 +22,23 @@ string RoseUtils::node_loc_str (SgNode *node) {
 }
 
 
-list<SgNode *> RoseUtils::find_sgnodes(SgNode *root, RoseUtils::FindNodeFn fn, int max_depth) {
+list<SgNode *> RoseUtils::find_sgnodes(SgNode *root, RoseUtils::FindNodeFn fn, void *data, int max_depth) {
     struct NodeFinder: public AstTopDownProcessing<int> {
        int _max_depth;
+       void *_data;
        FindNodeFn _fn;
        std::list<SgNode *> _nodes;
        
-	    NodeFinder(int max_depth, FindNodeFn fn) {
-            _max_depth = max_depth;
+	    NodeFinder(FindNodeFn fn, void *data, int max_depth) {
             _fn = fn;
+            _data = data;
+            _max_depth = max_depth;
         }  
       
        int evaluateInheritedAttribute(SgNode *node, int depth) {  
           if (_max_depth == -1 || depth <= _max_depth) {
             bool exit=false;  
-            if (_fn(node, exit)) {
+            if (_fn(node, _data, exit)) {
                 _nodes.push_back(node);
             }
             if (exit) {
@@ -47,7 +49,7 @@ list<SgNode *> RoseUtils::find_sgnodes(SgNode *root, RoseUtils::FindNodeFn fn, i
        }
     };
 
-    NodeFinder nf(max_depth, fn);
+    NodeFinder nf(fn, data, max_depth);
     try {
         nf.traverse(root, 0);
     } catch (int x) {
