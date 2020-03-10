@@ -1,2 +1,2 @@
-#define ARTISAN_VERSION "2003-08"
-#define ARTISAN_DESC "support for is_outermost() and is_innermost()"
+#define ARTISAN_VERSION "2003-10"
+#define ARTISAN_DESC "- fixed ast memory deallocation problem"

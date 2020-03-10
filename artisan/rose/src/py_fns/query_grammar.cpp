@@ -159,14 +159,14 @@ void parse(string query_str, query_t &query) {
 }
 
 void print (const query_t &query) {
-   hlog(2, "query", "=== QUERY: %s ====", query.query);
+   hlog(3, "query", "=== QUERY: %s ====", query.query);
    for (auto &x : query.nodes) {
-      hlog(2, "query", "[var:'%s'], [entity:'%s'], [tag:'%s']", x.var.c_str(), x.entity.c_str(), x.tag.c_str());
+      hlog(3, "query", "[var:'%s'], [entity:'%s'], [tag:'%s']", x.var.c_str(), x.entity.c_str(), x.tag.c_str());
     } 
     for (auto &x : query.edges) {
-       hlog(2, "query", "[min:%d] => [max:%d]", x.min, x.max);
+       hlog(3, "query", "[min:%d] => [max:%d]", x.min, x.max);
     }   
-   hlog(2, "query", "===========================");
+   hlog(3, "query", "===========================");
 }
 
 

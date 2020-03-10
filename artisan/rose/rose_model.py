@@ -176,7 +176,7 @@ class Model:
 
     def __del__(self):        
         if self.project != None:
-            set_verbose_level(log.level)            
+            set_verbose_level(log.level)       
             rose_destroy_project(self.project) 
              
     def query(self, match, where="", env=None):        

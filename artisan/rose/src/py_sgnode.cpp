@@ -58,11 +58,13 @@ py::object __frontend(list<string> args) {
 } 
 
 void __destroy_project(py::object prj) {
-   //assert_obj_entity(prj, "Project");       
+   assert_entity(prj, "Project");       
 
    SgProject *project = (SgProject *) to_sgnode(prj);
 
    //printf(":::::> Destroying project: %p\n", project);
+
+   
 
    if (rose_objs.find(project) != rose_objs.end()) {
       for (auto obj: rose_objs[project]) {
@@ -72,11 +74,12 @@ void __destroy_project(py::object prj) {
       rose_objs.erase(project);
    }
 
-
-
-   PrjAttribute *prj_attr = project_attributes.at(project);
-   delete prj_attr;
+   
+   //PrjAttribute *prj_attr = project_attributes.at(project);
+   //printf("%p\n", prj_attr);
+   //delete prj_attr;
    project_attributes.erase(project);
+   
 
  
  /* Not sure how to remove all nodes without corrupting the memory pool !
